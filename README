@@ -1,0 +1,13 @@
+Morm is an attempt to create a nice and as powerfull as possible PHP orm.
+
+For now, Morm can handle:
+
+* Simple Object -> Table mapping
+* one to one relations
+* one to manu relations
+* many to many relations (still in early alpha stage though)
+* polymorphism
+* other things I don't remember right now
+
+
+Fell free to ask for improvments
