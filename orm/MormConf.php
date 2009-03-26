@@ -45,17 +45,9 @@ class MormConf
         {
             if(in_array('Morm', class_parents($class_name)))
                 return $class_name;
-        }
-        $file_name = SITEBASE.'/include/'.self::getJTClassFile($class_name).'.php';
-        if(file_exists($file_name)) 
-            require_once $file_name;
-        if(class_exists($class_name))
-        {
-            if(in_array('Morm', class_parents($class_name)))
-                return $class_name;
             $class_name = 'm_'.$class_name;
         }
-        $file_name = SITEBASE.'/include/generated/'.$class_name.'.class.php';
+        $file_name = SITEPATH.'/app/models/generated/'.$class_name.'.php';
         if(!file_exists($file_name))
         {
             $tmpl_eclass = <<<Q
@@ -90,7 +82,7 @@ Q;
     {
         if(!isset(self::$_morm_conf))
         {
-            self::$_morm_conf = parse_ini_file(SITEBASE.self::INI_CONF_FILE);
+            self::$_morm_conf = parse_ini_file(SITEPATH.self::INI_CONF_FILE);
         }
         return self::$_morm_conf;
     }
@@ -109,24 +101,4 @@ Q;
         return isset(self::$_morm_conf[$class_name]);
     }
 
-    /**
-     * getJTClassFile 
-     *
-     * used for SFRJT.
-     * tries to find the class_name file using the autoloaders rules
-     * 
-     * @param string $class_name 
-     * @return string relativ path to a file without php extension
-     */
-    public static function getJTClassFile($class_name)
-    {
-        $exploded_class = explode('_', $class_name);
-        if($exploded_class[0] == 'sfrjt')
-        {
-            array_shift($exploded_class);
-            return 'sfrjt/'.implode('/', $exploded_class);
-        }
-        else
-            return $class_name.".class";
-    }
 }
