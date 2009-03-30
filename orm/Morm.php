@@ -189,7 +189,7 @@ class Morm
      *
      * @uses Morm::validate()
      * @uses SqlTools::sqlQuery()
-     * @throws exception_MormValidate through Morm::validate()
+     * @throws MormValidate through Morm::validateException()
      * @throws MormSqlException through SqlTools::sqlQuery()
      * @param boolean $validate
      * @return boolean
@@ -349,7 +349,7 @@ class Morm
             $this->_fields = $this->_original; 
         }
         else
-            throw new exception_NoPrimaryKeySql($pkey,$this->_table);
+            throw new NoPrimaryKeySqlException($pkey,$this->_table);
     }
 
     /**
@@ -703,7 +703,7 @@ class Morm
      * 
      * @param string $alias 
      * @throws Exception if the alias is not defined in the model
-     * @throws exception_MormImpossibleTableGuess if the table could not be 
+     * @throws MormImpossibleTableGuessException if the table could not be 
      * defined
      * @return string
      */
@@ -724,7 +724,7 @@ class Morm
                         return $dummy->_table;
                     }
                     else
-                        throw new exception_MormImpossibleTableGuess('can not define table from alias \'' . $alias . '\'');
+                        throw new MormImpossibleTableGuessException('can not define table from alias \'' . $alias . '\'');
                 }
         }
         else
@@ -947,7 +947,7 @@ class Morm
                     $to_load = mysql_fetch_assoc($rs);
                 }
                 else
-                    throw new exception_MormNoForeignObjectToLoad($field);
+                    throw new MormNoForeignObjectToLoadException($field);
             }
             if(is_array($to_load))
                 $this->_foreign_object[$field] = new $foreign_class($to_load);
@@ -1237,7 +1237,7 @@ class Morm
 //            $this->fillDefaultValues();
         if(!empty( $this->_errors) )
         {
-            throw new exception_MormValidate($this->_errors);
+            throw new MormValidateException($this->_errors);
         }
 
         return empty($this->_errors);

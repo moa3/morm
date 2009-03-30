@@ -33,7 +33,7 @@ class SqlTools
                 return "'".$value."'";
                 break;
             case 'string':
-                return "'".fix_quoting_mysql($value, TRUE)."'";
+                return "'".self::mysql_escape($value, TRUE)."'";
                 break;
             case 'array':
             case 'object':
@@ -46,10 +46,18 @@ class SqlTools
                 return 'NULL';
                 break;
             default:
-                return "'".fix_quoting_mysql($value, TRUE)."'";
+                return "'".self::mysql_escape($value, TRUE)."'";
                 break;
         }
 
+    }
+
+    public static function mysql_escape($string,$accept_html=FALSE)
+    {
+        // remove html tags by default
+        if ($accept_html===FALSE)
+            $string = preg_replace('/<[^>]*>/',' ',$string);
+        return get_magic_quotes_gpc() ? mysql_real_escape_string(stripslashes($string)) : mysql_real_escape_string($string);
     }
 
     /**
@@ -71,8 +79,8 @@ class SqlTools
                 $sql = self::formatQuery($query, array($params));
                 break;
         }
-        // if(SITE == '[DEV]')
-        //     var_dump($query);
+        //if(SITEENV == 'DEV')
+        //    user_error($query, NOTICE);
 
         $result = is_null($link_identifier) ? mysql_query($sql) : mysql_query($sql, $link_identifier);
         if(!$result) {
