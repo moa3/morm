@@ -97,6 +97,15 @@ class Morm
                                    );
 
     /**
+     * sti_field 
+     * 
+     * default STI field is 'type'
+     *
+     * @var string
+     */
+    protected $sti_field = 'type';
+
+    /**
      * Constructor. 
      * 
      * load model from 
@@ -152,6 +161,10 @@ class Morm
             return $this->getForeignObject($this->getForeignKeyFromAlias($name));
         if($this->isForeignMormons($name))
             return $this->getManyForeignObjects($name);
+        /**
+         * if nothing worked before, try to see if the method called get<CamelCased($name)> exists
+         * if it does, call it and return the result
+         */
         $method_name = 'get'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
         if(method_exists($this, $method_name))
             return $this->$method_name();
@@ -935,7 +948,6 @@ class Morm
         if($this->isForeignKey($field))
         {
             $foreign_class = $this->getForeignClass($field);
-            $dummy = new $foreign_class();
             if(is_null($to_load))
             {
                 //FIXME remove quotes when not needed
@@ -950,8 +962,8 @@ class Morm
                     throw new MormNoForeignObjectToLoadException($field);
             }
             if(is_array($to_load))
-                $this->_foreign_object[$field] = new $foreign_class($to_load);
-            else if (is_object($to_load) && (($dummy instanceof $to_load) || ($to_load instanceof $dummy)))//be careful, this could have some strange side effects
+                $this->_foreign_object[$field] = self::Factory($foreign_class, $to_load);
+            else if (is_object($to_load) && $to_load->is_a($foreign_class))
                 $this->_foreign_object[$field] = $to_load;
             else
                 throw new Exception('Could not load foreign object for field '.$field.': wrong data to load');
@@ -1717,6 +1729,127 @@ class Morm
             unset($values[$this->_pkey]);
         $morm->setFromArray($values);
         return $morm;
+    }
+
+    public function getStiField()
+    {
+        /**
+         * I may have a 'type' field in this model but I don't want to use it as a 
+         * STI 
+         */
+        if($this->sti_field === NULL) return NULL;
+        /**
+         * morm uses the 'type' field for STI but don't be stupid and throw an 
+         * exception if there isn't any 'type' field for the model
+         */
+        if($this->sti_field == 'type' && !$this->isField($this->sti_field)) return NULL;
+        /**
+         * Using 'type' for STI is bad (or not, or was already used for something 
+         * else on this model) but now I want to use Morm's cool STI feature on it 
+         * and let it guess the class name from another field.
+         */
+        if($this->isField($this->sti_field)) return $this->sti_field;
+        /**
+         * come on, the field I defined for sti does not even exist in the table.
+         * Silly me. 
+         */
+        throw new Exception($this->sti_field.' is not a field of the table '.$this->_table.' and can therefore not be used as an sti field');
+    }
+
+    /**
+     * is_a 
+     * 
+     * checks if $this is an instance of or inherits from the the given class 
+     * name or given object's class name
+     *
+     * @param string|object $obj_or_class 
+     * @return boolean
+     */
+    public function is_a($obj_or_class)
+    {
+        if (!is_object($obj_or_class) && !is_string($obj_or_class)) return false;
+        $obj = is_object($obj_or_class) ? $obj_or_class : new $obj_or_class();//FIXME this will not work if the class constructor needs a parameter
+        return ($this instanceof $obj);
+    }
+
+    /**
+     * Factory 
+     *
+     * instantiate a Morm and loads it using the sti field if declared, needed 
+     * and filled
+     *
+     * FIXME, maybe this could be used in FactoryFromMormons but to o that, Morm 
+     * should be able to load an object from an Array as if it was given to the 
+     * constructor
+     * 
+     * @param string $super_class top class of the STI
+     * @params array $to_load array used to load the mmorm object
+     * @return Morm
+     */
+    public static function Factory($super_class, $to_load)
+    {
+        //if(is_array($to_load))
+        //{
+        //    if(is_array($this->_pkey) && count(array_diff(array_keys($to_load),$this->_pkey)) == 0)
+        //        $this->loadByPKey($to_load);
+        //    else
+        //        $this->loadFromArray($to_load);
+        //}
+        //else if(!is_null($this->_pkey) && !$this->isEmpty($to_load))
+        //    $this->loadByPKey($to_load);
+        //die('plop');
+        $class = $super_class;
+        $model = new $class();
+        if($sti_field = $model->getStiField())
+        {
+            if(isset($to_load[$sti_field]) && !empty($to_load[$sti_field]))
+            {
+                $sti_class = MormConf::generateMormClass($to_load[$sti_field]);
+                $sti_model = new $sti_class();
+                if($sti_model->is_a($super_class)) 
+                {
+                    $class = $sti_class;
+                    unset($sti_model);
+                }                
+                else throw new Exception('The class '.$sti_class.' is not a '.$super_class.' and could not be used as a sti model');
+            }
+            else
+                throw new Exception('Could not guess the class to instantiate from this array, the sti field wasn\'t there');
+        }
+        unset($model);
+        return new $class($to_load);
+    }
+
+    /**
+     * FactoryFromMormons 
+     *
+     * almost the same as Factory but does strange things useful for Mormons
+     * 
+     * @param string $super_class top class of the STI
+     * @param Mormons $mormons mormons object to associate with the model
+     * @params array $to_load array used to load the mmorm object
+     * @access public
+     * @return Morm
+     */
+    public static function FactoryFromMormons($super_class, &$mormons, $to_load)
+    {
+        $model = new $super_class();
+        if($sti_field = $model->getStiField())
+        {
+            $sti_field_mormonized = 'morm'.MormConf::MORM_SEPARATOR.$model->_table.MormConf::MORM_SEPARATOR.$sti_field;
+            if(isset($to_load[$sti_field_mormonized]) && !empty($to_load[$sti_field_mormonized]))
+            {
+                $sti_class = MormConf::generateMormClass($to_load[$sti_field_mormonized]);
+                $sti_model = new $sti_class();
+                if($sti_model->is_a($super_class)) $model = $sti_model;
+                else throw new Exception('The class '.$sti_class.' is not a '.$super_class.' and could not be used as a sti model');
+            }
+            else
+                throw new Exception('Could not guess the class to instantiate from this array, the sti field wasn\'t there');
+        }
+        $model->associateWithMormons($mormons);
+        $model->loadFromMormons($to_load);
+        return $model;
     }
 }
 

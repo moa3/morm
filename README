@@ -45,6 +45,19 @@ As soon as this model has been generated once, you can edit it at your
 conveniance.
 
 
+Be careful if you have a field called "type" in your table.
+Morm will try to use the STI and load a class named after the content of this
+field. Eventhough Morm tries to guess things and be nice with you as much as
+possible, in this case, if the model Morm is looking for does not exist, it will
+fail.
+If you want to avoid this behavior, just add
+
+        
+        protected $sti_field = NULL;
 
 
-Fell free to ask for improvements
+in the corresponding model
+
+
+
+Feel free to ask for improvements

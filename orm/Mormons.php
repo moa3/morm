@@ -347,6 +347,19 @@ class Mormons implements Iterator
     }
 
     /**
+     * limit 
+     *
+     * alias for set_limit
+     * 
+     * @param mixed $limit 
+     * @return void
+     */
+    public function limit($limit)
+    {
+        return $this->set_limit($limit);
+    }
+
+    /**
      * @throws Exception if $limit is not a numeric value
      * @param integer $limit
      * @return void
@@ -508,9 +521,7 @@ class Mormons implements Iterator
             }
             else
             {
-                $model = new $model_name();
-                $model->associateWithMormons(&$this);
-                $model->loadFromMormons($line);
+                $model = Morm::FactoryFromMormons($model_name, $this, $line);
                 $model_fields = $model->getTableDesc();
                 if($model_fields->getPKey())
                 {
@@ -597,9 +608,7 @@ class Mormons implements Iterator
     public function addMormFromArray($table, $to_load, &$to_associate = null)
     {
         $model_name = get_class($this->base_models[$this->base_table]);
-        $model = new $model_name();
-        $model->associateWithMormons(&$this);
-        $model->loadFromMormons($to_load);
+        $model = Morm::FactoryFromMormons($model_name, $this, $to_load);
         $model_fields = $model->getTableDesc();
         if($model_fields->getPKey())
             $this->mormons[$this->base_table.'_'.$model->{$model->_pkey}] = $model;
