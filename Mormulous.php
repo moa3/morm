@@ -17,10 +17,10 @@ define('MODELS_PATH', BASE_PATH.'models/');
 define('GENERATED_MODELS_PATH', BASE_PATH.'models/'); //this one should be writable
 
 //set here your database connection informations
-define('DB_HOST', 'localhost');
-define('DB_NAME', '');
-define('DB_USER', '');
-define('DB_PASSWORD', '');
+define('DB_HOST', 'localhost:/tmp/mysqld.sock');
+define('DB_NAME', 'footrep_dev');
+define('DB_USER', NULL);
+define('DB_PASSWORD', NULL);
 
 /**
  * Morm Autoloader 
