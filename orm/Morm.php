@@ -106,6 +106,36 @@ class Morm
     protected $sti_field = 'type';
 
     /**
+     * _plugin
+     *
+     * list of loaded plugins
+     *
+     * @access protected
+     * @var array
+     */
+    protected static $_plugin = array();
+
+    /**
+     * _plugin_method
+     *
+     * list of methods loaded through plugins
+     *
+     * @access protected
+     * @var array
+     */
+    protected static $_plugin_method = array();
+
+    /**
+     * _plugin_options
+     *
+     * plugins constructors options
+     *
+     * @access protected
+     * @var array
+     */
+    protected static $_plugin_options = array();
+
+    /**
      * Constructor. 
      * 
      * load model from 
@@ -170,6 +200,19 @@ class Morm
             return $this->$method_name();
         else
             return $this->$name;
+    }
+
+    public function __call ($method, $args)
+    {
+        // Check plugins
+        if(self::$_plugin_method[$method])
+        {
+            $plugin_class = self::$_plugin_method[$method];
+            $plugin_options = self::$_plugin_options[$plugin_class];
+            $plugin = new $plugin_class ($this, $plugin_options);
+            if(is_callable(array($plugin, $method)))
+                return call_user_func_array(array($plugin, $method), $args);
+        }
     }
 
     /**
@@ -1788,16 +1831,6 @@ class Morm
      */
     public static function Factory($super_class, $to_load)
     {
-        //if(is_array($to_load))
-        //{
-        //    if(is_array($this->_pkey) && count(array_diff(array_keys($to_load),$this->_pkey)) == 0)
-        //        $this->loadByPKey($to_load);
-        //    else
-        //        $this->loadFromArray($to_load);
-        //}
-        //else if(!is_null($this->_pkey) && !$this->isEmpty($to_load))
-        //    $this->loadByPKey($to_load);
-        //die('plop');
         $class = $super_class;
         $model = new $class();
         if($sti_field = $model->getStiField())
@@ -1850,6 +1883,49 @@ class Morm
         $model->associateWithMormons($mormons);
         $model->loadFromMormons($to_load);
         return $model;
+    }
+
+    /**
+     * plug
+     *
+     * load a Morm plugin
+     *
+     * @param string $plugin_name class name to load for your plugin
+     * @param array $plugin_options optional array passed to the constructor when instanciating a plugin
+     * @access public
+     * @return boolean
+     */
+    public static function plug($name, $options=array())
+    {
+        // Silently plugins loaded twice
+        if(isset(self::$_plugin[$name]))
+            return true;
+
+        // Try to load plugin source
+        $plugin_file = dirname(__FILE__) . "/plugins/$name/$name.php";
+        if(!file_exists($plugin_file))
+            throw new Exception("Can't load plugin $name: source file is missing");
+
+        require_once($plugin_file);
+
+        // Check for conflicts between plugin methods
+        $registered_methods = array_keys(self::$_plugin_method);
+        $new_methods = call_user_func(array($name, 'extend_with'));
+        foreach($new_methods as $new_method)
+        {
+            if(in_array($new_method, $registered_methods))
+                throw new Exception("Can't load plugin $name: method conflict " .
+                                    "with plugin: " . self::$_plugin_method[$method] .
+                                    " ($new_method)");
+        }
+
+        // Register plugin and its methods
+        self::$_plugin[$name] = $new_methods;
+        foreach(self::$_plugin[$name] as $method)
+            self::$_plugin_method[$method] = $name;
+
+        // Register plugin constructor options
+        self::$_plugin_options[$name] = $options;
     }
 }
 
