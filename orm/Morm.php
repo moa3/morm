@@ -1814,7 +1814,7 @@ class Morm
                 else throw new Exception('The class '.$sti_class.' is not a '.$super_class.' and could not be used as a sti model');
             }
             else
-                throw new Exception('Could not guess the class to instantiate from this array, the sti field wasn\'t there');
+                throw new Exception('Could not guess the class "' . $class . '" to instantiate from this array, the sti field "' . $sti_field . '" wasn\'t there');
         }
         unset($model);
         return new $class($to_load);
