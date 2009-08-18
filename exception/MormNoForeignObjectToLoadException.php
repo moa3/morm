@@ -39,16 +39,18 @@
 */
 
 
-class exception_MormFieldValidate extends Exception
-{
+/**
+ *  raise when number for amount of something is under 0.
+ *
+ * @category  AF83
+ * @package exception
+ * @author    Michel Petit <mpetit@af83.com>
+ * @copyright 2008 AF83
+ * @license   BSD License (3 Clause) http://www.opensource.org/licenses/bsd-license.php
+ */
+class MormNoForeignObjectToLoadException extends MormSqlException {
 
-     public function __construct($message = 'Erreur de validation')
-     {
-              $this->message = $message;
-     }
-     
-
+    public function __construct($field) {
+        parent::__construct('No associated object found for key '.$field);
+    }
 }
-
-
-?>

@@ -38,15 +38,10 @@
  * @package exception
 */
 
-
-class exception_MormImpossibleTableGuess extends Exception
+class MormFieldUnexistingException extends MormSqlException
 {
-
-     public function __construct($message = 'impossible to guess the table from an alias')
+     public function __construct($table, $field)
      {
-              $this->message = $message;
+         parent::__contruct("The field {$table}.{$field} doesn't exist in the database.");
      }
-     
-
 }
-

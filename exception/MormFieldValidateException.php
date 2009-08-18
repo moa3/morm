@@ -38,33 +38,10 @@
  * @package exception
 */
 
-
-
-class exception_MormSql extends Exception
+class MormFieldValidateException extends MormSqlException
 {
-    public $message = 'Problème d’acces aux données';
-
-    public function __construct($sql_error)
+    public function __construct($message = 'Erreur de validation')
     {
-        $this->message = $sql_error;
-        //debug_log_exception($this);
+        parent::__construct($message);
     }
-    
-    public static function getByErrno($sql_errno,$sql_error) {
-        switch($sql_errno) {
-            
-            case 1062:
-                $exception_class = 'exception_MormDuplicateEntry';
-            break;
-            default:
-                $exception_class = 'exception_MormSql';
-            break;
-        }
-        
-        return new $exception_class($sql_error);
-    }
-
 }
-
-
-?>

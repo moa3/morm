@@ -7,14 +7,10 @@
  */
 class  FieldDesc
 {
-    var $type = NULL;
-    var $php_type = 'string';
-    var $values = NULL;
-    var $length = NULL;
-
-    public function __construct()
-    {
-    }
+    public $type = NULL;
+    public $php_type = 'string';
+    public $values = NULL;
+    public $length = NULL;
 
     public function Decorate()
     {
@@ -29,9 +25,8 @@ class  FieldDesc
 
     private function setType()
     {
-        
-        // see http://fr.php.net/manual/fr/function.mysql-list-fields.php for a direct access to mySQL field type, may be useful
-        
+        // see http://fr.php.net/manual/fr/function.mysql-list-fields.php for a 
+        // direct access to mySQL field type, may be useful
         $this->type = $this->Type;
         $regexps = array(
                          'int' => '/^int\(([\d]+)\)([^\$]*)$/',

@@ -39,13 +39,11 @@
  * @package exception
 */
 
-
-
-class exception_MormDuplicateEntry extends exception_MormSql {
+class MormDuplicateEntryException extends MormSqlException {
     
-    public $message = 'Cette valeur existe déjà';
+    public function __construct($message = 'This entry already exists')
+    {
+        parent::__construct($message);
+    }
     
 }
-
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class MormValidateException extends Exception
+class MormValidateException extends MormSqlException
 {
     public $errors = array();
 

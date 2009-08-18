@@ -245,7 +245,7 @@ class Morm
      *
      * @uses Morm::validate()
      * @uses SqlTools::sqlQuery()
-     * @throws MormValidate through Morm::validateException()
+     * @throws MormValidateException through Morm::validateException()
      * @throws MormSqlException through SqlTools::sqlQuery()
      * @param boolean $validate
      * @return boolean
@@ -388,7 +388,7 @@ class Morm
      * fills _fields and _original arrays with row's values
      *
      * @access private
-     * @throws exception_NoPrimaryKeySql
+     * @throws NoPrimaryKeySqlException
      * @param mixed $pkey 
      * @return void
      */
@@ -405,7 +405,7 @@ class Morm
             $this->_fields = $this->_original; 
         }
         else
-            throw new NoPrimaryKeySqlException($pkey,$this->_table);
+            throw new NoPrimaryKeySqlException($pkey, $this->_table);
     }
 
     /**
@@ -1002,7 +1002,7 @@ class Morm
                     $to_load = mysql_fetch_assoc($rs);
                 }
                 else
-                    throw new MormNoForeignObjectToLoadException($field);
+                   throw new MormNoForeignObjectToLoadException($field);
             }
             if(is_array($to_load))
                 $this->_foreign_object[$field] = self::Factory($foreign_class, $to_load);
@@ -1254,10 +1254,10 @@ class Morm
      * from the database or the defined validation methods if they exist.
      * These validation methods should be named after the following pattern:
      * "validate<Field_name>" where <Field_name> is the name of the field to 
-     * valide with its first caracter uppercased. The method must throw an exception_MormFieldValidate if there 
+     * valide with its first caracter uppercased. The method must throw an MormFieldValidate if there 
      * is a validation error
      * 
-     * @throws exception_MormValidate
+     * @throws MormValidateException
      * @return boolean
      */
     public function validate()
@@ -1272,7 +1272,7 @@ class Morm
                 {
                     $this->$validate_method();
                 } 
-                catch (exception_MormFieldValidate $e) 
+                catch (MormFieldValidateException $e) 
                 {
                     $error = $e->getMessage();
                 }

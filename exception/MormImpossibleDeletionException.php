@@ -1,4 +1,5 @@
 <?php
+
 // vim: ai ts=4 sts=4 et sw=4
 // kate: indent-mode cstyle; replace-tabs on; tab-width 4; show-tabs off;
 // -*- Mode: PHP; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
@@ -38,17 +39,10 @@
  * @package exception
 */
 
-
-class exception_MormFieldUnexisting extends Exception
-{
-
-     public function __construct($table, $field)
-     {
-              $this->message = "The field {$table}.{$field} doesn't exist in the database.";
-     }
-     
-
+class MormImpossibleDeletionException extends MormSqlException {
+    
+    public function __construct($table) {
+        parent::__construct("Can't delete from {$table} after an order,limit or offset clause has been set");
+    }
+   
 }
-
-
-?>

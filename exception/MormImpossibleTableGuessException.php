@@ -39,19 +39,10 @@
 */
 
 
-/**
- *  raise when number for amount of something is under 0.
- *
- * @category  AF83
- * @package exception
- * @author    Michel Petit <mpetit@af83.com>
- * @copyright 2008 AF83
- * @license   BSD License (3 Clause) http://www.opensource.org/licenses/bsd-license.php
- */
-class exception_MormNoForeignObjectToLoad extends Exception {
-
-    public function __construct($field) {
-        $this->message = 'No associated object found for key '.$field;
+class MormImpossibleTableGuessException extends MormSqlException
+{
+    public function __construct($message = 'impossible to guess the table from an alias')
+    {
+        parent::__construct($message);
     }
 }
-?>

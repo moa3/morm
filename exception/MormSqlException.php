@@ -1,5 +1,4 @@
 <?php
-
 // vim: ai ts=4 sts=4 et sw=4
 // kate: indent-mode cstyle; replace-tabs on; tab-width 4; show-tabs off;
 // -*- Mode: PHP; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
@@ -39,19 +38,24 @@
  * @package exception
 */
 
-
-
-class exception_MormImpossibleDeletion extends exception_MormSql {
-    
-    public $message = 'Cette valeur existe déjà';
-    
-    public function __construct($table) {
-        
-        $this->message = "Can't delete from {$table} after an order,limit or offset clause has been set";
-        
+class MormSqlException extends Exception
+{
+    public function __construct($sql_error)
+    {
+        parent::__construct($sql_error);
     }
     
+    public static function getByErrno($sql_errno,$sql_error) {
+        switch($sql_errno) {
+            
+            case 1062:
+                $exception_class = 'MormDuplicateEntryException';
+            break;
+            default:
+                $exception_class = 'MormSqlException';
+            break;
+            }
+        
+        return new $exception_class($sql_error);
+    }
 }
-
-
-?>

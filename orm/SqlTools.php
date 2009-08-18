@@ -84,7 +84,7 @@ class SqlTools
 
         $result = is_null($link_identifier) ? mysql_query($sql) : mysql_query($sql, $link_identifier);
         if(!$result) {
-            throw exception_MormSql::getByErrno(mysql_errno(),mysql_error());
+            throw MormSqlException::getByErrno(mysql_errno(),mysql_error());
         }
         return $result;
 

@@ -401,7 +401,7 @@ class Mormons implements Iterator
         
         foreach ($conds as $field => $void) {
             if(!$this->base_models[$cond_table]->table_desc->isField($field)) {
-                throw new exception_MormFieldUnexisting($cond_table, $field);
+                throw new MormFieldUnexistingException($cond_table, $field);
             }
         }
 
@@ -444,7 +444,7 @@ class Mormons implements Iterator
     {
         
         if(!empty($this->order) || !is_null($this->limit) || !is_null($this->offset)) {
-            throw new exception_MormImpossibleDeletion($this->base_table);
+            throw new MormImpossibleDeletionException($this->base_table);
         }
         
         $rs = SqlTools::sqlQuery("DELETE {$this->base_table} \n".
