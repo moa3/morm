@@ -109,11 +109,36 @@ class TestMorm extends MormUnitTestCase
         $author->save();
         $authors = new Mormons('authors');
         $i = 0;
-        foreach ($authors as $id => $author)
+        foreach ($authors as $author)
         {
             $i++;
         }
         $this->assertEqual(2, $i);
+    }
+
+    public function testUpdateEntry()
+    {
+        $author = new Authors();
+        $author->name = "Chuck Norris";
+        $author->save();
+        $author->name = "Bruce Lee";
+        $author->save();
+        $author2 = new Authors(1);
+        $this->assertEqual('Bruce Lee', $author2->name);
+    }
+
+    public function testDeleteEntry()
+    {
+        $author = new Authors();
+        $author->name = "Chuck Norris";
+        $author->save();
+        $author->delete();
+        try 
+        {
+            $author2 = new Authors(1);
+            $this->fail("Must throw a NoPrimaryKeySqlException");
+        }
+        catch (NoPrimaryKeySqlException $e) {}
     }
     
 }
