@@ -52,7 +52,7 @@ class SqlTools
 
     }
 
-    public static function mysql_escape($string,$accept_html=FALSE)
+    public static function mysql_escape($string, $accept_html = FALSE)
     {
         // remove html tags by default
         if ($accept_html===FALSE)
@@ -79,8 +79,6 @@ class SqlTools
                 $sql = self::formatQuery($query, array($params));
                 break;
         }
-        //if(SITEENV == 'DEV')
-        //    user_error($query, NOTICE);
 
         $result = is_null($link_identifier) ? mysql_query($sql) : mysql_query($sql, $link_identifier);
         if(!$result) {
