@@ -1,7 +1,7 @@
 <?php
 require_once('prepend.php');
 
-class MormTestSqlTools extends MormUnitTestCase
+class MormTestSqlFormatAndEscape extends MormUnitTestCase
 {
     public function testFormatInt()
     {
@@ -62,4 +62,65 @@ class MormTestSqlTools extends MormUnitTestCase
     {
         $this->assertEqual(' HACK ', SqlTools::mysql_escape('<iframe src=\'HACK\'>HACK</iframe>'));
     }
+}
+
+class MormTestSqlToolsQuery extends MormUnitTestCase
+{
+    protected function mormSetUp()
+    {
+        $this->sql->queryDB('CREATE TABLE `test` (
+                                       `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+                                        ) ENGINE = InnoDB;');
+    }
+
+    protected function mormTearDown()
+    {
+        $this->sql->queryDB('DROP TABLE `test`');
+    }
+
+    public function testSimpleQuery()
+    {
+        $result = mysql_fetch_array(SqlTools::sqlQuery('SELECT COUNT(1)'));
+        $this->assertEqual(1, $result[0]);
+    }
+
+    public function tetsBadQueryThowException()
+    {
+        try {
+            $result = SqlTools::sqlQuery('SELECT \'');
+            $this->fail("Must throw a MormSqlException");
+        } catch (MormSqlException $e) {
+            $this->pass();
+        }
+    }
+
+    public function testDuplicateEntryThrowException()
+    {
+        try {
+            SqlTools::sqlQuery('INSERT INTO test VALUES(1)');
+            SqlTools::sqlQuery('INSERT INTO test VALUES(1)');
+            $this->fail("Must throw a MormDuplicateEntryException");
+        } catch (MormDuplicateEntryException $e) {
+            $this->pass();
+        }
+    }
+
+    public function testFormatSqlToolsNoArray()
+    {
+        $result = mysql_fetch_array(SqlTools::sqlQuery('SELECT ?', 42));
+        $this->assertEqual(42, $result[0]);
+    }
+
+    public function testFormatSqlToolsWithArray()
+    {
+        $result = mysql_fetch_array(SqlTools::sqlQuery('SELECT ? + ?', array(40, 2)));
+        $this->assertEqual(42, $result[0]);
+    }
+
+    public function testFormatSqlToolsWithArrayNoFake()
+    {
+        $result = mysql_fetch_array(SqlTools::sqlQuery('SELECT ? + ?', array(40, 1)));
+        $this->assertEqual(41, $result[0]);
+    }
+
 }
