@@ -52,4 +52,14 @@ class MormTestSqlTools extends MormUnitTestCase
     {
         $this->assertEqual('SELECT id WHERE id=\'<iframe src=\"HACK\">HACK</iframe>\'', SqlTools::formatQuery('SELECT id WHERE id=?', array('<iframe src="HACK">HACK</iframe>')));
     }
+
+    public function testEscapeHtmlDoubleQuote()
+    {
+        $this->assertEqual(' HACK ', SqlTools::mysql_escape('<iframe src="HACK">HACK</iframe>'));
+    }
+
+    public function testEscapeHtmlSimpleQuote()
+    {
+        $this->assertEqual(' HACK ', SqlTools::mysql_escape('<iframe src=\'HACK\'>HACK</iframe>'));
+    }
 }
