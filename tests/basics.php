@@ -88,7 +88,7 @@ class TestMorm extends MormUnitTestCase
             $authors = new Authors(2);
             $this->fail('Must throw a NoPrimaryKeySqlException');
         } catch (NoPrimaryKeySqlException $e) {
-            // be happy :)
+            $this->pass();
         }
     }
 
@@ -138,7 +138,9 @@ class TestMorm extends MormUnitTestCase
             $author2 = new Authors(1);
             $this->fail("Must throw a NoPrimaryKeySqlException");
         }
-        catch (NoPrimaryKeySqlException $e) {}
+        catch (NoPrimaryKeySqlException $e) {
+            $this->pass();
+        }
     }
     
 }
