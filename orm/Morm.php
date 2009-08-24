@@ -270,7 +270,11 @@ class Morm
                 $sql = $this->createInsertSql();
                 $ret = SqlTools::sqlQuery($sql);
                 if($ret && $this->hasAutoIncrement())
-                    $this->_fields[$this->table_desc->getAutoIncrementField()] = mysql_insert_id();
+                {
+                    $autoincrement_field = $this->table_desc->getAutoIncrementField();
+                    $this->_fields[$autoincrement_field] = mysql_insert_id();
+                    $this->_original[$autoincrement_field] = $this->_fields[$autoincrement_field];
+                }
                 return $ret;
             }
         }
