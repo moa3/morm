@@ -146,7 +146,7 @@ class TestOneToOneRelationsWithADifferentKeyName extends MormUnitTestCase
         $this->assertEqual('John Doe', $fetch->authors->name);
     }
 
-    public function TestGetOneBookWithBadJeyThrowException()
+    public function TestGetOneBookWithBadKeyThrowException()
     {
         $fetch = new Books($this->book->id);
         $fetch->setKey('foo');
