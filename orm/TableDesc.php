@@ -54,7 +54,7 @@ class TableDesc implements Iterator
     public function __construct ($table)
     {
         //set a table_desc object with the fields for a table
-        $rs = mysql_query("desc $table");
+        $rs = SqlTools::sqlQuery("desc $table");
         if($rs)
         {
             $this->table['name'] = $table;

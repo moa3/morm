@@ -42,7 +42,7 @@
 class MormImpossibleDeletionException extends MormSqlException {
     
     public function __construct($table) {
-        parent::__construct("Can't delete from {$table} after an order,limit or offset clause has been set");
+         parent::__construct("Can't delete from {$table} after an order,limit or offset clause has been set");
     }
    
 }

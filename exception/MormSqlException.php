@@ -47,7 +47,6 @@ class MormSqlException extends Exception
     
     public static function getByErrno($sql_errno,$sql_error) {
         switch($sql_errno) {
-            
             case 1062:
                 $exception_class = 'MormDuplicateEntryException';
             break;

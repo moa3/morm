@@ -1,36 +1,8 @@
 <?php
 require_once('prepend.php');
 
-class Authors extends Morm 
+class TestMorm extends MormTestCaseWithTableAuthors
 {
-    public $_table = "authors" ;
-
-    public static function createTable() 
-    {
-        return 'CREATE TABLE `authors` (
-                                       `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-                                       `name` VARCHAR( 255 ) NOT NULL
-                                        ) ENGINE = InnoDB;';
-    }
-
-    public static function dropTable() 
-    {
-        return 'DROP TABLE `authors`;';
-    }
-}
-
-class TestMorm extends MormUnitTestCase 
-{
-    protected function mormSetUp()
-    {
-        $this->sql->queryDB(Authors::createTable());
-    }
-
-    protected function mormTearDown()
-    {
-        $this->sql->queryDB(Authors::dropTable());
-    }
-
     public function testGetCountOnOneTable() 
     {
         $post = new Mormons('authors');

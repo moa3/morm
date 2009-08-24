@@ -43,6 +43,9 @@ function morm_autoloader($class)
 }
 spl_autoload_register('morm_autoloader');
 
+/**
+ *
+ */
 class TestDatabaseManager
 {
     private static $instance = NULL;
@@ -149,4 +152,42 @@ class MormUnitTestCase extends UnitTestCase
     protected function mormSetUp() {}
 
     protected function mormTearDown() {}
+
+    protected function createEntry($class, $params)
+    {
+        $insert = new $class($params);
+        $insert->save();
+        return $insert;
+    }
+}
+
+class Authors extends Morm 
+{
+    public $_table = "authors" ;
+
+    public static function createTable() 
+    {
+        return 'CREATE TABLE `authors` (
+                                       `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+                                       `name` VARCHAR( 255 ) NOT NULL
+                                        ) ENGINE = InnoDB;';
+    }
+
+    public static function dropTable() 
+    {
+        return 'DROP TABLE `authors`;';
+    }
+}
+
+class MormTestCaseWithTableAuthors extends MormUnitTestCase
+{
+    protected function mormSetUp()
+    {
+        $this->sql->queryDB(Authors::createTable());
+    }
+
+    protected function mormTearDown()
+    {
+        $this->sql->queryDB(Authors::dropTable());
+    }
 }

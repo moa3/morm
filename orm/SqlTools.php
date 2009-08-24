@@ -79,13 +79,12 @@ class SqlTools
                 $sql = self::formatQuery($query, array($params));
                 break;
         }
-
         $result = is_null($link_identifier) ? mysql_query($sql) : mysql_query($sql, $link_identifier);
-        if(!$result) {
-            throw MormSqlException::getByErrno(mysql_errno(),mysql_error());
+        if (!$result) 
+        {
+            throw MormSqlException::getByErrno(mysql_errno(), mysql_error());
         }
         return $result;
-
     }
 
     /**

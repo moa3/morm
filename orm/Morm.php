@@ -708,7 +708,7 @@ class Morm
         foreach($this->_foreign_keys as $field => $val)
             if(isset($val['alias']) && $val['alias'] == $alias) return $field;
         //FIXME get the key from foreign model instead of returning this->_pkey 
-        if($this->isForeignMormons($alias)) return $this->_pkey;
+        if($this->isForeignMormonss($alias)) return $this->_pkey;
         throw new Exception($alias.' is not a foreign alias for the model '.get_class($this));
     }
 
