@@ -33,7 +33,12 @@ class Books extends Morm
 
     public function setKey($key_name)
     {
-                $this->_foreign_keys['author_id']['key'] = $key_name;
+        $this->_foreign_keys['author_id']['key'] = $key_name;
+    }
+
+    public function getForeignObjectForTesting()
+    {
+        return $this->_foreign_object;
     }
 }
 
@@ -116,6 +121,28 @@ class TestOneToOneRelations extends MormTestCaseWithTableAuthors
         $this->assertEqual('John Doe', $fetch->object->name);
     }
 
+    public function testSetJoin()
+    {
+        $books = new Mormons('books');
+        $books->set_join('authors');
+        foreach ($books as $book)
+        {
+            $this->assertEqual(1, count($book->getForeignObjectForTesting()));
+        }       
+    }
+
+    public function testNoJoinObject()
+    {
+        $books = new Mormons('books');
+        foreach ($books as $book)
+        {
+            $this->assertEqual(0, count($book->getForeignObjectForTesting()));
+            $name = $book->authors->name;
+            $this->assertEqual(1, count($book->getForeignObjectForTesting()));
+        }
+        
+    }
+
 }
 
 class TestOneToOneRelationsWithADifferentKeyName extends MormUnitTestCase
@@ -160,6 +187,4 @@ class TestOneToOneRelationsWithADifferentKeyName extends MormUnitTestCase
             $this->pass();
         }
     }
-
-     
 }

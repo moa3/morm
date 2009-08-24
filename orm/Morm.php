@@ -43,9 +43,9 @@ class Morm
     private $_foreign_values;
 
     /**
-     * @access private
+     * @access protected
      */
-    private $_foreign_object;
+    protected $_foreign_object;
 
     /**
      * @access protected
@@ -948,7 +948,7 @@ class Morm
             return $this->_foreign_object[$field];
         }
         else
-            throw new Exception($field.' is not a foreign key in table '.$this->_table);
+            throw new MormSqlException($field.' is not a foreign key in table '.$this->_table);
     }
 
     /**
