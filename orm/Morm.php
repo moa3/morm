@@ -11,10 +11,10 @@ setlocale(LC_NUMERIC, 'C');
 class Morm 
 {
     /**
-     * @access public
+     * @access protected
      * @var string
      */
-    var $_table;
+    protected $_table;
 
     /**
      * @access public
@@ -1877,6 +1877,10 @@ class Morm
             if(isset($to_load[$sti_field_mormonized]) && !empty($to_load[$sti_field_mormonized]))
             {
                 $sti_class = MormConf::generateMormClass($to_load[$sti_field_mormonized]);
+                if (!$sti_class) 
+                {
+                    throw new MormSqlException('The class '. $to_load[$sti_field_mormonized] . ' doesn\'t exists.');
+                }
                 $sti_model = new $sti_class();
                 if($sti_model->is_a($super_class)) $model = $sti_model;
                 else throw new Exception('The class '.$sti_class.' is not a '.$super_class.' and could not be used as a sti model');

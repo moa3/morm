@@ -6,8 +6,8 @@ define('BASE_PATH', dirname(__FILE__).'/../');
 define('MORM_PATH', BASE_PATH.'orm/');
 define('MORM_CONF_PATH', BASE_PATH.'conf/');
 define('EXCEPTION_PATH', BASE_PATH.'exception/');
-define('MODELS_PATH', BASE_PATH.'models/');
-define('GENERATED_MODELS_PATH', BASE_PATH.'models/'); //this one should be writable
+define('MODELS_PATH', BASE_PATH.'tests/models/');
+define('GENERATED_MODELS_PATH', BASE_PATH.'tests/models/'); //this one should be writable
 
 function morm_autoloader($class)
 {

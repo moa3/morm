@@ -49,14 +49,18 @@ class MormConf
         }
         self::generateMorm($class_name, $table);
         $file_name = GENERATED_MODELS_PATH.$class_name.'.php';
-        require_once $file_name;
-        if(class_exists($class_name))
+        if (file_exists($file_name)) 
         {
-            if(in_array('Morm', class_parents($class_name)))
-                return $class_name;
-            throw new Exception('class '.$class_name.' is not a Morm');
+            require_once $file_name;
+            if(class_exists($class_name))
+                {
+                    if(in_array('Morm', class_parents($class_name)))
+                        return $class_name;
+                    throw new MormSqlException('class '.$class_name.' is not a Morm');
+                }
+            return $class_name;
         }
-        return $class_name;
+        return NULL;
     }
 
     public static function generateMorm($class_name, $table = NULL)
@@ -70,12 +74,12 @@ class MormConf
 <?php
     class %s extends Morm 
     {
-        var \$_table = '%s';
+        protected \$_table = '%s';
     }
 ?>
 
 Q;
-            $r = file_put_contents($file_name, sprintf($tmpl_eclass, $class_name, $table));
+            file_put_contents($file_name, sprintf($tmpl_eclass, $class_name, $table));
         } 
     }
 
